@@ -46,8 +46,13 @@ class Post extends Model
     {
       return static::selectRaw('year(created_at) as year, monthname(created_at) as month, count(*) as published')
           ->groupBy('year', 'month')
-          ->orderByRaw('year DESC, month ASC')
+          ->orderByRaw('min(created_at) desc')
           ->get()
           ->toArray();
+    }
+
+    public function tags()
+    {
+      return $this->belongsToMany('App\Tag');
     }
 }

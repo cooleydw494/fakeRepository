@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Post;
+use App\Tag;
+use App\Repositories\Posts;
 use Carbon\Carbon;
 
 class PostsController extends Controller
@@ -15,14 +17,9 @@ class PostsController extends Controller
 
     public function index()
     {
-      //$posts = Post::latest()->get();
-      //alernatively could be
-      //$posts = Post::orderBy('created_at', 'desc')->get();
-
-
       $posts = Post::latest()
-          ->filter(request()->only(['month', 'year']))
-          ->get();
+        ->filter(request(['month', 'year']))
+        ->get();
 
       return view('posts.index', compact('posts'));
     }
@@ -68,6 +65,9 @@ class PostsController extends Controller
       auth()->user()->publish(
         new Post(request(['title', 'body']))
       );
+
+      //flash
+      session()->flash('message', 'Your post has now been published.');
 
       //redirect somewhere in the application (home page)
       return redirect('/');
